@@ -40,7 +40,9 @@ void zolo::setZolo(ftype lmin, ftype lmax, int N) {
   lambda = calcLambda(); if (VBS) std::cout << "lambda: " << lambda << std::endl;
   mult=2*lambda/(1+lambda)/M; 
   getRoots();
+  writeRoots();
   getExtrema();
+  writeExtrema();
 }
 
 void zolo::setInnerCoeffs() {
@@ -130,6 +132,19 @@ void zolo::getRoots() {
   }
 }
 
+void zolo::writeRoots() {
+  
+  std::ofstream ofile;
+  std::ostringstream ss1;
+  std::ostringstream ss2;
+  ss1<<float(lmin);
+  ss2<<float(lmax);
+  ofile.open("zroots"+std::to_string(Ndw)+"R"+ss1.str()+"_"+ss2.str()+".dat"); 
+  ofile << std::setprecision(outprecision);
+  for(int j=0;j<Ndw;j++) ofile << roots[j] << " " << 1 << " " << 0 << std::endl;
+  ofile.close();
+}
+
 void zolo::getExtrema() { 
   std::cout << "getExtrema" << std::endl;
   extrema.resize(Ndw+1);
@@ -142,6 +157,19 @@ void zolo::getExtrema() {
   }
 }
 
+void zolo::writeExtrema() {
+  
+  std::ofstream ofile;
+  std::ostringstream ss1;
+  std::ostringstream ss2;
+  ss1<<float(lmin);
+  ss2<<float(lmax);
+  ofile.open("zextrema"+std::to_string(Ndw)+"R"+ss1.str()+"_"+ss2.str()+".dat"); 
+  ofile << std::setprecision(outprecision);
+  for(int j=0;j<=Ndw;j++) ofile << extrema[j] << " " << 1 << " " << 0 << std::endl;
+  ofile.close();
+}
+
 void zolo::writeZolo(int Npts) {
   
   std::ofstream ofile;
@@ -150,12 +178,15 @@ void zolo::writeZolo(int Npts) {
   ss1<<float(lmin);
   ss2<<float(lmax);
   ofile.open("zolo"+std::to_string(Ndw)+"R"+ss1.str()+"_"+ss2.str()+".dat"); 
+  ofile << std::setprecision(outprecision);
   evalZolo(Npts,ofile); // no plot points
   ofile.close();
   ofile.open("zroots"+std::to_string(Ndw)+"R"+ss1.str()+"_"+ss2.str()+".dat"); 
+  ofile << std::setprecision(outprecision);
   for(int j=0;j<Ndw;j++) ofile << roots[j] << " " << 1 << " " << 0 << std::endl;
   ofile.close();
   ofile.open("zextrema"+std::to_string(Ndw)+"R"+ss1.str()+"_"+ss2.str()+".dat"); 
+  ofile << std::setprecision(outprecision);
   for(int j=0;j<=Ndw;j++) ofile << extrema[j] << " " << 1 << " " << 0 << std::endl;
   ofile.close();
 }

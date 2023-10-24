@@ -10,10 +10,9 @@ public:
   zolorf(zolo& z);
   void setFactorZolo(zolo& z);
 
-
   ftype evalFactorZolo(ftype& r);
-  void evalFactorZolo(int Np);
-  void writeFactors();
+//  void evalFactorZolo(int Np);
+  void writeFactorCoeffs();
 
   void setPartialFractionZolo();
   void setPartialFractionZolo(std::vector<ftype>& num, std::vector<ftype>& denom,
@@ -26,7 +25,7 @@ public:
   ftype polyDeriv(ftype& x,std::vector<ftype>& zeros);
 
   ftype evalPartialFractionZolo(ftype& r);
-  void evalZolo(int Np,bool PF);
+  void outputRFZoloRange(int Np,bool PF);
   void writePartFracCoeffs();
 
   void testDividePoly();
@@ -45,7 +44,8 @@ private:
   int Nfront;
   std::vector<ftype> front; // polynomial
   std::vector<ftype> pfcoeffs; // partial fraction coeffs
-  bool VERBOSE=true; 
+  bool VERBOSE=true;
+  int outprecision=12; // output precision for coefficients
 };
 
 #endif

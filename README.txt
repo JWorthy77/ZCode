@@ -1,6 +1,6 @@
 compile with:
 
-g++ elliptic.cpp ht.cpp zolo.cpp zolorf.cpp main.cpp -lgmp -lgmpxx -lmpfr
+g++ -std=c++11 elliptic.cpp ht.cpp zolo.cpp zolorf.cpp main.cpp -lgmp -lgmpxx -lmpfr
 
 
 

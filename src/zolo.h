@@ -19,7 +19,9 @@ public:
   ftype Rhalf(ftype& x);
   ftype zsgn(ftype& x);
   void getRoots();
+  void writeRoots();
   void getExtrema();
+  void writeExtrema();
   void writeZolo(int Npts);
   void testZolo(int Nz);
   void evalZolo(int Np,std::ofstream& ofile);
@@ -44,6 +46,7 @@ public:
   std::vector<ftype> extrema;
 
   bool VBS=false;
+  int outprecision=12; // output precision for coefficients
 };
 
 #endif

@@ -8,9 +8,8 @@ zolorf::zolorf() {
 
 zolorf::zolorf(zolo& z) {
 
-  setFactorZolo(z); // makes av,dv
-//  setPartialFractionZolo(av,dv,front,pfcoeffs); // makes front,pfcoeffs
-  setPartialFractionZolo(); // makes front,pfcoeffs
+  setFactorZolo(z); // makes and outputs factor coefficients
+  setPartialFractionZolo(); // makes and outputs pf coefficients
 
 }
 
@@ -27,32 +26,33 @@ void zolorf::setFactorZolo(zolo& z) {
   for(int m=0;m<Nnum;m++) d=-d/(rmin*rmin*z.cnum[m]);
   for(int m=0;m<Nnum;m++) av[m]=z.lmin*z.lmin*z.cnum[m];
   for(int m=0;m<Ndenom;m++) dv[m]=z.lmin*z.lmin*z.cdenom[m];
-  writeFactors();
+  writeFactorCoeffs();
 }
 
-void zolorf::writeFactors() {
+void zolorf::writeFactorCoeffs() {
 
   std::ofstream ofile;
   ofile.open("zoloFactorCoeffs.dat"); 
-//  ofile << "s(x) = d.x.sum_m (c[n]-x^2)/sum_n (g[n]-x^2)" << std::endl;
-  ofile << "s(x) = d.x.sum_m (x^2-c[n])/sum_n (x^2-g[n])" << std::endl;
-  ofile << "d: " << d << std::endl;
-  ofile << "c: "; for (int j=0;j<Nnum;j++) ofile << av[j] << " "; ofile << std::endl;
-  ofile << "g: "; for (int j=0;j<Ndenom;j++) ofile << dv[j] << " "; ofile << std::endl;
+  ofile << std::setprecision(outprecision);
+  ofile << "s(x) = m.x.sum_m (x^2-a[m])/sum_n (x^2-d[n])" << std::endl;
+  ofile << "m: " << std::endl;
+  ofile << d << std::endl;
+  ofile << "a: " << std::endl; 
+  for (int j=0;j<Nnum;j++) { ofile << av[j] << " " << std::endl; }
+  ofile << "d: " << std::endl; 
+  for (int j=0;j<Ndenom;j++) { ofile << dv[j] << " " << std::endl; }
   ofile.close();
 }
 
 ftype zolorf::evalFactorZolo(ftype& r) {
 
   ftype v=r*d;
-//  for(int m=0;m<Nnum;m++) v=v*(av[m]-r*r);
-//  for(int m=0;m<Ndenom;m++) v=v/(dv[m]-r*r);
   for(int m=0;m<Nnum;m++) v=v*(r*r-av[m]);
   for(int m=0;m<Ndenom;m++) v=v/(r*r-dv[m]);
   return v;
 }
 
-void zolorf::evalFactorZolo(int Np) {
+/*void zolorf::evalFactorZolo(int Np) {
 
   std::ofstream ofile;
   ofile.open("zoloFactor.dat"); 
@@ -67,7 +67,7 @@ void zolorf::evalFactorZolo(int Np) {
     x=rmin*exp(xdash);
   }
   ofile.close();
-}
+}*/
 
 void zolorf::setPartialFractionZolo() {
 
@@ -119,16 +119,21 @@ void zolorf::writePartFracCoeffs() {
 
   std::ofstream ofile;
   ofile.open("zoloPartFracCoeffs.dat"); 
-  ofile << "s(x) = d.x.(sum_m f[m] x^m + sum_n c[n]/(g[n]-x^2)" << std::endl;
-  ofile << "d: " << d << std::endl;
-  ofile << "f: "; for (int j=0;j<front.size();j++) ofile << front[j] << " "; ofile << std::endl;
-  ofile << "c: "; for (int j=0;j<pfcoeffs.size();j++) ofile << pfcoeffs[j] << " "; ofile << std::endl;
-  ofile << "g: "; for (int j=0;j<dv.size();j++) ofile << dv[j] << " "; ofile << std::endl;
+  ofile << std::setprecision(outprecision);
+  ofile << "s(x) = m.x.[f + sum_n c[n]/(x^2-d[n])]" << std::endl;
+  ofile << "m: " << std::endl;
+  ofile << d << std::endl;
+  ofile << "f: " << std::endl; 
+  for (int j=0;j<front.size();j++) ofile << front[j] << " " << std::endl;
+  ofile << "c: " << std::endl; 
+  for (int j=0;j<pfcoeffs.size();j++) ofile << pfcoeffs[j] << " " << std::endl;
+  ofile << "d: " << std::endl; 
+  for (int j=0;j<dv.size();j++) ofile << dv[j] << " " << std::endl;
   ofile.close();
 
-  ofile.open("zoloDenoms"+std::to_string(dv.size())+".dat"); 
-  for (int j=0;j<dv.size();j++) ofile << dv[j] << std::endl;
-  ofile.close();
+//  ofile.open("zoloDenoms"+std::to_string(dv.size())+".dat"); 
+//  for (int j=0;j<dv.size();j++) ofile << dv[j] << std::endl;
+//  ofile.close();
 }
 
 void zolorf::expandPoly(std::vector<ftype>& zeros,std::vector<ftype>& epoly) {
@@ -191,7 +196,7 @@ ftype zolorf::evalpoly(ftype& x,std::vector<ftype>& coeffs) {
 ftype zolorf::evalfpoly(ftype& x,std::vector<ftype>& zeros) {
   // poly = (x-c0)(x-c1)(x-c2)...
   int nc=zeros.size();
-  ftype fpoly=1;
+  ftype fpoly=ftype(1);
   for(int j=0;j<nc;j++) {
     fpoly=fpoly*(x-zeros[j]);
   }
@@ -199,7 +204,7 @@ ftype zolorf::evalfpoly(ftype& x,std::vector<ftype>& zeros) {
 }
 
 ftype zolorf::polyDeriv(ftype& x,std::vector<ftype>& zeros) {
-// calculate derivative of poly dercibed by zeros 
+// calculate derivative of poly described by zeros 
 
   int nc=zeros.size();
   ftype polyderiv=0;
@@ -219,14 +224,12 @@ ftype zolorf::evalPartialFractionZolo(ftype& r) {
   ftype pf=ftype(0);
   if(Nfront==1) pf=front[0];
   if(Nfront>1) {std::cout << "Not implemented - Nfront: " << Nfront << std::endl; std::exit(0);}
-//  for(int n=0;n<Ndenom;n++) pf=pf+pfcoeffs[n]/(dv[n]-r*r);
   for(int n=0;n<Ndenom;n++) pf=pf+pfcoeffs[n]/(r*r-dv[n]);
   pf=d*r*pf;
-//  if (Nfront==1) pf=-pf;
   return pf;
 }
 
-void zolorf::evalZolo(int Np,bool PF) {
+void zolorf::outputRFZoloRange(int Np,bool PF) {
 
   std::ofstream ofile;
   if(PF){
@@ -254,46 +257,6 @@ void zolorf::evalZolo(int Np,bool PF) {
   ofile.close();
 }
 
-/*
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine makePartFrac(num,denom,front,pfcoeffs)
-!     assumes denom has distinct real coefficients
-!     passes in factored form (coefficients are zeros)
-      implicit none
-      real(prc),dimension(:) :: num,denom
-      real(prc),dimension(:) :: front,pfcoeffs
-      real(prc),allocatable,dimension(:) :: enum,edenom,pnum
-      real(prc) z
-      integer j,nn,nd,nf
-
-      nn=size(num)
-      nd=size(denom)
-      allocate(enum(nn+1))
-      call expandPoly(num,enum)
-      allocate(edenom(nd+1))
-      call expandPoly(denom,edenom)
-      nf=nn-nd+1
-      if (nf.ge.1) then
-        allocate(pnum(nd))
-        call dividePoly(enum,edenom,front,pnum)
-        do j=1,nd
-          z=denom(j)
-          pfcoeffs(j)=evalpoly(z,pnum)/polyDeriv(z,denom)
-        end do
-        deallocate(pnum)
-      else
-        do j=1,nd
-          z=denom(j)
-          pfcoeffs(j)=evalfpoly(z,num)/polyDeriv(z,denom)
-        end do
-      end if
-      deallocate(enum)
-      deallocate(edenom)
-      
-      return
-      end subroutine makePartFrac
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-*/
 void zolorf::testPartFrac() {
 
   std::cout << "testPartFrac" << std::endl;

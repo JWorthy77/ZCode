@@ -1,0 +1,61 @@
+\documentclass[11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\pagecolor{white}
+\usepackage{geometry}
+\geometry{a4paper}
+
+
+\begin{document}
+
+
+\section{Zolotarev Notes}
+
+The Zolotarev optimal rational function approximating the sign function $\mathcal{Z}(x)=1$ over the range $x\in[r_1,r_2]$ is expressed in factored form by
+\begin{equation}
+\mathcal{Z}(x)=mx\frac{\prod_{j=1}^{j=N_n}x^2-a_i}{\prod_{j=1}^{N_d}x^2-d_i} 
+\end{equation}
+and in partial fraction form by
+\begin{equation}
+\mathcal{Z}(x)=mx[f+\sum_{j=1}^{N_d}\frac{c_i}{x^2-d_i}]
+\end{equation}
+
+Parameters $r_1$,$r_2$, and $N$ are hard coded in to main.cpp in the function z.setZolo(r1,r2,N). The coefficients are output in zoloFactorCoeffs.dat and zolozoloPartFracCoeffs.dat respectively.
+
+\subsection{Overlap Operator}
+
+The overlap operator (with Wilson kernel) is then expressed directly as
+\begin{equation}
+D_{OL}=\frac{1+m}{2}+\frac{1-m}{2}mD_W( f+ \sum_j \frac{c_j} {D_W^\dagger D_W-d_j})
+\end{equation}
+where $D_W\equiv D_W(M)$ is the usual Wilson Dirac operator with parameter $M\in(0,2)$.
+
+\subsection{Domain Wall}
+
+The massless domain wall operator with Wilson kernel is illustrated by
+
+\begin{equation}
+D_{DW} = 
+\begin{pmatrix}
+ \omega_1 D^\parallel+I & (\omega_1 D^\parallel-I)P_- & 0 & 0 \\
+ (\omega_2 D^\parallel-I)P_+ & \omega_2 D^\parallel+I & (\omega_2 D^\parallel-I)P_- & 0 \\
+ 0 & (\omega_3 D^\parallel-I)P_+ & \omega_3 D^\parallel+I & (\omega_3 D^\parallel-I)P_- \\
+ 0 & 0 & (\omega_4 D^\parallel-I)P_+ & \omega_4 D^\parallel+I 
+\end{pmatrix}
+\end{equation}
+
+The coefficients $\omega_i$ are set to 1 to be equivalent to a hyperbolic tangent approximation of the sign function. To be equivalent to the Zolotarev approximation we set $\omega_i=1/u_u$ where $u_i$ are the roots of $\mathcal{Z}(x)-1$. These roots are output in the file zroots.dat. This indirect form is more efficient in the construction of sea fermions in the RHMC algorithm for instance.
+
+
+\section{Hyperbolic Tangent}
+
+  Partial fraction and factored coefficients are also output for the hyperbolic tangent approximation if required. This may be the preferable (and simpler) option when weakly coupled, with a small condition number, but is inefficient for stronger coupling with large condition number.
+  
+
+
+\end{document}
+
